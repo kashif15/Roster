@@ -399,3 +399,23 @@ p {
 .table-responsive {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.profile-picture-container {
+    position: relative;
+}
+
+.profile-picture {
+    position: relative;
+    display: inline-block;
+}
+
+.edit-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+}
