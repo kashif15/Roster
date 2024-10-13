@@ -26,6 +26,8 @@ $(function () {
             },
             error: function(err) {
                 console.error('Error fetching shift data:', err);
+                 // Clear allEmployees array to ensure no stale data is shown
+                allEmployees = [];
                 const teamContainer = $('#teamContainer');
                 teamContainer.empty();  // Clear the existing content
                 // Optionally handle the error by displaying a message to the user
@@ -107,6 +109,11 @@ $(function () {
 
         // Add 'btn-primary' to the clicked button
         $(this).removeClass('btn-outline-primary').addClass('btn-primary');
+
+        if (allEmployees.length === 0) {
+            renderEmployees(allEmployees); 
+            return;
+        }
 
         if (selectedShift === 'All') {
             // Show all employees
