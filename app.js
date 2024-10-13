@@ -13,8 +13,11 @@ const bcrypt = require('bcryptjs');
 const User = require('./models/user'); // Assuming you have a User model
 const SECRET_KEY = process.env.SECRET_KEY; // Use environment variables in production
 const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
 
 
+
+app.use(methodOverride('_method'));
 app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -433,7 +436,7 @@ app.post('/upload-image', imageUpload.single('image'), async (req, res) => {
 });
 
 // PUT route to update employee details by employeeName, including image upload
-app.put('/update', imageUpload.single('image'), async (req, res) => {
+app.put('/update',  verifyToken, isAdmin, imageUpload.single('image'), async (req, res) => {
     const { employeeName, employeeId, email } = req.body;
 
     try {
@@ -467,8 +470,7 @@ app.put('/update', imageUpload.single('image'), async (req, res) => {
         // Save the updated employee details to the database
         await employee.save();
 
-        // Return success response with updated employee details
-        res.json({ message: 'Employee details updated successfully', employee });
+       res.redirect('/');
     } catch (err) {
         console.error('Error updating employee:', err);
         res.status(500).json({ error: 'An error occurred while updating employee details' });
