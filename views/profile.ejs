@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- Bootstrap CSS -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" /> -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+</head>
+<body class="profile-page">
+
+    <!-- Navbar (Same as in index and team pages) -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h1>Roster</h1>
+        </div>
+        <div class="navbar-center">
+            <a href="/" title="Home"><i class="fas fa-home"></i></a>
+            <a href="/team" title="Team"><i class="fas fa-users"></i></a>
+            <a href="#" title="Upload" data-toggle="modal" data-target="#uploadModal"><i class="fas fa-upload"></i></a>
+        </div>
+        <div class="navbar-right">
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+        <div class="profile-container">
+            <div class="profile-details">
+                <h1 class="page-title">Hello <%= employee.employeeName %></h1>
+                <p class="description">You can see the progress you've made with your work and manage your projects or assigned tasks.</p>
+            </div>
+            <div class="profile-picture">
+                <img src="<%= employee.image ? employee.image : 'https://randomuser.me/api/portraits/men/2.jpg' %>" alt="<%= employee.employeeName %>">
+            </div>
+        </div>
+    </section>
+
+    <!-- Calendar Section -->
+    <section class="calendar-section">
+        <div id="calendar"></div>
+    </section>
+
+   <!-- Shift Summary Table -->
+<div class="container my-10">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 col-md-10">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Shift Type</th>
+                            <th scope="col">Days Worked</th>
+                            <th scope="col">On Sunday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Morning</td>
+                            <td id="morning-count">0</td>
+                            <td id="morning-sunday-count">0</td>
+                        </tr>
+                        <tr>
+                            <td>Afternoon</td>
+                            <td id="afternoon-count">0</td>
+                            <td id="afternoon-sunday-count">0</td>
+                        </tr>
+                        <tr>
+                            <td>Night</td>
+                            <td id="night-count">0</td>
+                            <td id="night-sunday-count">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal for Upload -->
+    <div id="uploadModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload Roster</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="uploadFile">Select Excel file:</label>
+                            <input type="file" id="uploadFile" name="file" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="month">Month:</label>
+                            <select id="month" name="month" class="form-control">
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>                            
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Year:</label>
+                            <input type="number" id="year" name="year" class="form-control" placeholder="2024" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- jQuery, Bootstrap JS, FullCalendar JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+
+    <!-- Inside profile.ejs -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        // Assuming "shifts" is passed from the backend as a JavaScript object
+        var shiftData = JSON.parse('<%- shifts %>');
+
+        // Function to format date string to YYYY-MM-DD
+        function formatDateString(dateString) {
+            let parts = dateString.split('-');
+            let year = parts[0];
+            let month = parts[1].padStart(2, '0');  // Pad month with leading zero if necessary
+            let day = parts[2].padStart(2, '0');    // Pad day with leading zero if necessary
+            return `${year}-${month}-${day}`;
+        }
+
+        // Function to calculate shift statistics
+        function calculateShiftStatistics(month, year) {
+            let morningCount = 0;
+            let afternoonCount = 0;
+            let nightCount = 0;
+            let sundayMorningCount = 0;
+            let sundayAfternoonCount = 0;
+            let sundayNightCount = 0;
+
+            for (let date in shiftData) {
+                if (shiftData.hasOwnProperty(date)) {
+                    let shiftType = shiftData[date];
+                    let dateObj = new Date(date);
+                    let shiftMonth = dateObj.getMonth() + 1; // getMonth() is zero-based
+                    let shiftYear = dateObj.getFullYear();
+                    let dayOfWeek = dateObj.getDay(); // 0 (Sun) to 6 (Sat)
+
+                    // Only count shifts in the selected month and year
+                    if (shiftMonth === month && shiftYear === year) {
+                        // Check if the day is a weekend
+                        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Not Sunday (0) and Not Saturday (6)
+                            if (shiftType === 'M') morningCount++;
+                            else if (shiftType === 'A') afternoonCount++;
+                            else if (shiftType === 'N') nightCount++;
+                        } else if (dayOfWeek === 0) { // It's Sunday
+                            if (shiftType === 'M') sundayMorningCount++;
+                            else if (shiftType === 'A') sundayAfternoonCount++;
+                            else if (shiftType === 'N') sundayNightCount++;
+                        }
+                    }
+                }
+            }
+
+            // Update the table counts
+            document.getElementById('morning-count').textContent = morningCount;
+            document.getElementById('afternoon-count').textContent = afternoonCount;
+            document.getElementById('night-count').textContent = nightCount;
+
+            document.getElementById('morning-sunday-count').textContent = sundayMorningCount;
+            document.getElementById('afternoon-sunday-count').textContent = sundayAfternoonCount;
+            document.getElementById('night-sunday-count').textContent = sundayNightCount;
+        }
+
+        // Convert shift data to FullCalendar events
+        var calendarEvents = [];
+        for (var date in shiftData) {
+            if (shiftData.hasOwnProperty(date)) {
+                let formattedDate = formatDateString(date);  // Format the date
+                let shiftType = shiftData[date];
+                let backgroundColor, borderColor;
+
+                // Assign colors based on shift type (M, A, N)
+                if (shiftType === 'M') {
+                    backgroundColor = '#FF8A65';  // Darker orange for Morning shift
+                    borderColor = '#E65100';
+                } else if (shiftType === 'A') {
+                    backgroundColor = '#FFB74D';  // Muted amber for Afternoon shift
+                    borderColor = '#F57C00';
+                } else if (shiftType === 'N') {
+                    backgroundColor = '#9575CD';  // Darker purple for Night shift
+                    borderColor = '#512DA8';
+                }
+
+                calendarEvents.push({
+                    title: shiftType,  // The shift type (M, A, N)
+                    start: formattedDate,  // The correctly formatted date (YYYY-MM-DD)
+                    backgroundColor: backgroundColor,  // Set background color
+                    borderColor: borderColor  // Set border color
+                });
+            }
+        }
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: calendarEvents,
+            dateClick: function(info) {
+                // Handle date clicks if needed
+            },
+            datesSet: function(dateInfo) {
+                let selectedMonth = dateInfo.start.getMonth() + 1; // Months are zero-indexed
+                let selectedYear = dateInfo.start.getFullYear();
+                calculateShiftStatistics(selectedMonth, selectedYear);
+            }
+        });
+
+        calendar.render();
+        
+        // Calculate statistics for the initial month
+        calculateShiftStatistics(new Date().getMonth() + 1, new Date().getFullYear());
+    });
+    
+</script>
+
+</body>
+</html>
